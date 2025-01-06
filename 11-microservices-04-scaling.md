@@ -151,6 +151,12 @@ redis-cli --cluster create 10.1.0.8:7000 10.1.0.8:7001 10.1.0.27:7000 10.1.0.27:
 
 ![image](https://github.com/user-attachments/assets/fc321034-7d6b-4111-b8d7-25107a534f27)
 
+Проверка кластера:
+
+```bash
+redis-cli -c -p 7000 cluster info
+```
+![image](https://github.com/user-attachments/assets/a1617265-6832-4f32-a884-215920c9f7d9)
 
 ---
 
