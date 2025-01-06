@@ -66,6 +66,92 @@
 
 ![11-04-01](https://user-images.githubusercontent.com/1122523/114282923-9b16f900-9a4f-11eb-80aa-61ed09725760.png)
 
+Настройка кластера:
+
+```conf
+VM1
+
+# /etc/redis/shard1/redis.conf
+port 7000
+cluster-enabled yes
+cluster-config-file nodes-7000.conf
+cluster-node-timeout 5000
+appendonly yes
+
+# /etc/redis/shard2/redis-replica.conf
+port 7001
+cluster-enabled yes
+cluster-config-file nodes-7001.conf
+cluster-node-timeout 5000
+appendonly yes
+daemonize yes
+
+
+
+redis-server /etc/redis/shard1/redis.conf --protected-mode no
+redis-server /etc/redis/shard2/redis-replica.conf --protected-mode no
+
+VM2
+
+# /etc/redis/shard2/redis.conf
+port 7000
+cluster-enabled yes
+cluster-config-file nodes-7000.conf
+cluster-node-timeout 5000
+appendonly yes
+daemonize yes
+
+
+# /etc/redis/shard3/redis-replica.conf
+port 7001
+cluster-enabled yes
+cluster-config-file nodes-7001.conf
+cluster-node-timeout 5000
+appendonly yes
+daemonize yes
+
+
+redis-server /etc/redis/shard2/redis.conf --protected-mode no
+redis-server /etc/redis/shard3/redis-replica.conf --protected-mode no
+
+VM3
+
+# /etc/redis/shard3/redis.conf
+port 7000
+cluster-enabled yes
+cluster-config-file nodes-7000.conf
+cluster-node-timeout 5000
+appendonly yes
+daemonize yes
+
+
+# /etc/redis/shard1/redis-replica.conf
+port 7001
+cluster-enabled yes
+cluster-config-file nodes-7001.conf
+cluster-node-timeout 5000
+appendonly yes
+daemonize yes
+
+
+redis-server /etc/redis/shard3/redis.conf --protected-mode no
+redis-server /etc/redis/shard1/redis-replica.conf --protected-mode no
+```
+Остановка кластера
+
+```bash
+redis-cli -p 7000 shutdown
+redis-cli -p 7001 shutdown
+```
+Сборка кластера:
+
+```bash
+redis-cli --cluster create 10.1.0.8:7000 10.1.0.8:7001 10.1.0.27:7000 10.1.0.27:7001 10.1.0.19:7000 10.1.0.19:7001 --cluster-replicas 1
+```
+
+![image](https://github.com/user-attachments/assets/fc321034-7d6b-4111-b8d7-25107a534f27)
+
+
 ---
 
 ### Как оформить ДЗ?
